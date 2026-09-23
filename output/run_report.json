@@ -1,0 +1,28 @@
+{
+  "nodes": 2248,
+  "edges": 3119,
+  "transactions": 4840,
+  "seeds": 81,
+  "weak_components": 35,
+  "smallest_component": 1,
+  "components_with_edges": 16,
+  "isolated_nodes": 19,
+  "clusters": 105,
+  "depth4_leaves": 444,
+  "roles": {
+    "terminal": 1527,
+    "peripheral": 634,
+    "transit": 32,
+    "consolidator": 19,
+    "coordinator": 18,
+    "distributor": 18
+  },
+  "thresholds": {
+    "high_fan": 5,
+    "coordinator_volume_p90_kzt": 741811.6999999997,
+    "low_ratio": 0.2,
+    "rapid_share": 0.5
+  },
+  "transaction_dates_day_only": true,
+  "elapsed_seconds": 0.459
+}
