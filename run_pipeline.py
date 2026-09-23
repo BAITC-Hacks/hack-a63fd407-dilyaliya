@@ -47,7 +47,7 @@ def main():
         table.to_csv(target, index=False, encoding='utf-8')
         require(pd.read_csv(target).shape == table.shape, f'Ошибка чтения {target}')
     df.to_parquet(args.out / 'node_metrics.parquet', index=False)
-    build(df, edges, args.out / 'graph.html')
+    build(df, edges, tx, graph, args.out / 'graph.html')
     report = dict(nodes=len(nodes), edges=len(edges), transactions=len(tx), seeds=int(nodes.is_seed.sum()),
                   weak_components=len(components), smallest_component=min(map(len, components)),
                   components_with_edges=sum(len(c) > 1 or graph.subgraph(c).number_of_edges() > 0 for c in components),

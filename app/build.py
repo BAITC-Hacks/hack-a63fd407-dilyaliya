@@ -1,9 +1,11 @@
+import hashlib
 import json
+from app.cases import case_context
 import math
 from pathlib import Path
 
 
-def build(df, edges, destination):
+def build(df, edges, tx, graph, destination):
     records = json.loads(df.to_json(orient='records', date_format='iso'))
     by_gid = {r['gid']: r for r in records}
     groups = list(df.groupby('cluster_id', sort=True))
@@ -15,11 +17,16 @@ def build(df, edges, destination):
             radius = 9 * math.sqrt(j)
             by_gid[gid]['x'] = (i % cols) * 330 + radius * math.cos(angle)
             by_gid[gid]['y'] = (i // cols) * 330 + radius * math.sin(angle)
+    cases = case_context(records, graph)
     # gid передаём строками: int64 может выходить за точность JavaScript Number.
     for r in records:
         r['gid'] = str(r['gid'])
     links = [dict(src=str(r.src), dst=str(r.dst), sum_kzt=float(r.sum_kzt), n_tx=int(r.n_tx))
              for r in edges.itertuples(index=False)]
-    payload = json.dumps({'nodes': records, 'edges': links}, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c')
+    transactions = [dict(ref=f'row:{i+1}', src=str(r.src), dst=str(r.dst), date=r.date.isoformat(), sum_kzt=float(r.sum_kzt))
+                    for i, r in enumerate(tx.itertuples(index=False))]
+    fingerprint = hashlib.sha256(json.dumps({'nodes': [(r['gid'], r['depth'], r['is_seed']) for r in records],
+                                            'edges': links, 'transactions': transactions}, sort_keys=True).encode()).hexdigest()
+    payload = json.dumps({'nodes': records, 'edges': links, 'transactions': transactions, 'cases': cases, 'fingerprint': fingerprint}, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c')
     template = Path(__file__).with_name('template.html').read_text(encoding='utf-8')
-    Path(destination).write_text(template.replace('__GRAPH_DATA__', payload), encoding='utf-8')
+    Path(destination).write_text(template.replace('__GRAPH_DATA__', payload).replace('__CASE_JS__', Path(__file__).with_name('cases.js').read_text(encoding='utf-8')), encoding='utf-8')
