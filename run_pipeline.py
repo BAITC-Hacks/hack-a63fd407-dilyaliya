@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import hashlib
+import platform
+from importlib.metadata import version
 from pathlib import Path
 from time import perf_counter
 import pandas as pd
@@ -8,7 +11,7 @@ from pipeline.load import load, require
 from pipeline.metrics import calculate
 from pipeline.roles import assign, ROLES
 from pipeline.clustering import detect, summarize
-from pipeline.ranking import rank
+from pipeline.ranking import rank, sensitivity, WEIGHTS
 from app.build import build
 
 ROOT = Path(__file__).resolve().parent
@@ -29,6 +32,9 @@ def main():
     membership, components = detect(graph)
     df['cluster_id'] = df.gid.map(membership)
     df, top = rank(df, args.top)
+    scenarios, stability = sensitivity(df, args.top)
+    ranges = scenarios.groupby('gid')['rank'].agg(rank_min='min', rank_max='max')
+    df = df.join(ranges, on='gid')
     clusters = summarize(df, edges)
     roles = df[NODE_COLUMNS]
     require(len(roles) == len(nodes) and roles.gid.is_unique, 'Потеря/дублирование узлов')
@@ -47,13 +53,19 @@ def main():
         table.to_csv(target, index=False, encoding='utf-8')
         require(pd.read_csv(target).shape == table.shape, f'Ошибка чтения {target}')
     df.to_parquet(args.out / 'node_metrics.parquet', index=False)
-    build(df, edges, tx, graph, args.out / 'graph.html')
+    scenarios.to_csv(args.out / 'ranking_sensitivity.csv', index=False, encoding='utf-8')
+    build(df, edges, args.out / 'graph.html', clusters, top, stability, tx=tx, graph=graph)
     report = dict(nodes=len(nodes), edges=len(edges), transactions=len(tx), seeds=int(nodes.is_seed.sum()),
                   weak_components=len(components), smallest_component=min(map(len, components)),
                   components_with_edges=sum(len(c) > 1 or graph.subgraph(c).number_of_edges() > 0 for c in components),
                   isolated_nodes=sum(graph.degree(gid) == 0 for gid in graph),
                   clusters=len(clusters), depth4_leaves=int(df.is_depth4_leaf.sum()),
                   roles=df.role.value_counts().to_dict(), thresholds=thresholds,
+                  ranking_weights=WEIGHTS, ranking_sensitivity=stability,
+                  python=platform.python_version(),
+                  dependencies={name: version(name) for name in ['pandas', 'numpy', 'pyarrow', 'networkx']},
+                  input_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in sorted(args.data.glob('*.parquet'))},
                   transaction_dates_day_only=bool(tx.date.eq(tx.date.dt.normalize()).all()),
                   elapsed_seconds=round(perf_counter()-start, 3))
     (args.out / 'run_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')

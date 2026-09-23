@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<rect width="1280" height="720" fill="#0c1420"/>
+<style>text{font-family:Arial,sans-serif;fill:#e4edf7}.title{font-size:36px;font-weight:bold}.head{font-size:23px;font-weight:bold}.body{font-size:18px}.note{font-size:16px;fill:#a2b2c7}.num{font-size:16px;fill:#66dfc2;font-weight:bold}</style>
+<text class="num" x="58" y="54">HACKALEM · АРХИТЕКТУРА РЕШЕНИЯ</text>
+<text class="title" x="58" y="108">От переводов к очереди ручной проверки</text>
+<text class="body" x="58" y="151">Локальный Python → три CSV и автономное рабочее место аналитика</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#66dfc2" stroke-width="1.5"/></marker></defs>
+<g fill="#152437" stroke="#31465f"><rect x="58" y="212" width="258" height="255" rx="14"/><rect x="360" y="212" width="258" height="255" rx="14"/><rect x="662" y="212" width="258" height="255" rx="14"/><rect x="964" y="212" width="258" height="255" rx="14"/></g>
+<g stroke="#66dfc2" stroke-width="2" marker-end="url(#a)"><path d="M322 340H350"/><path d="M624 340H652"/><path d="M926 340H954"/></g>
+<text class="num" x="80" y="246">01 / ДАННЫЕ</text><text class="head" x="80" y="285">Три Parquet</text>
+<text class="body" x="80" y="330">2 248 узлов</text><text class="body" x="80" y="362">3 119 рёбер</text><text class="body" x="80" y="394">4 840 транзакций</text><text class="note" x="80" y="437">Типы, суммы, даты, связи</text>
+<text class="num" x="382" y="246">02 / МЕТРИКИ</text><text class="head" x="382" y="285">Направленный граф</text>
+<text class="body" x="382" y="330">Вход, выход, контрагенты</text><text class="body" x="382" y="362">Время и пути от seed</text><text class="body" x="382" y="394">Louvain и потоки групп</text><text class="note" x="382" y="437">Обрыв графа учитывается</text>
+<text class="num" x="684" y="246">03 / ГИПОТЕЗЫ</text><text class="head" x="684" y="285">Роли и приоритет</text>
+<text class="body" x="684" y="330">Шесть объяснимых ролей</text><text class="body" x="684" y="362">Шесть вкладов в балл</text><text class="body" x="684" y="394">14 сценариев весов</text><text class="note" x="684" y="437">Каждый вывод обоснован</text>
+<text class="num" x="986" y="246">04 / ИНТЕРФЕЙС</text><text class="head" x="986" y="285">Работа аналитика</text>
+<text class="body" x="986" y="330">Постоянный топ-30</text><text class="body" x="986" y="362">Карточка и путь от seed</text><text class="body" x="986" y="394">Гипотеза кластера</text><text class="note" x="986" y="437">HTML + CSV без сервера</text>
+<rect x="58" y="510" width="1164" height="135" rx="14" fill="#142d2b"/>
+<text class="head" x="84" y="549">Результат: кого проверить и на каких наблюдениях основан выбор</text>
+<text class="body" x="84" y="585">Изоляты сохраняются · 444 листа четвёртого колена помечены · вход seed неполон</text>
+<text class="note" x="84" y="618">Балл не является вероятностью нарушения. Путь на месячном графе не доказывает движение тех же денег.</text>
+<text class="note" x="58" y="687">Проверка входов → сохранение всех узлов → фиксированные CSV → тесты → живой браузерный прогон</text>
+</svg>

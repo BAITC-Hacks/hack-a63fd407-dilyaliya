@@ -16,7 +16,9 @@ def calculate(nodes, edges, tx):
                          ('n_tx_in', dict(graph.in_degree(weight='n_tx'))),
                          ('n_tx_out', dict(graph.out_degree(weight='n_tx')))]:
         df[name] = df.gid.map(values)
-    df['fan_in'], df['fan_out'] = df.in_degree, df.out_degree
+    # Self-transfers are activity, but not a distinct counterparty.
+    df['fan_in'] = df.gid.map({gid: sum(src != gid for src in graph.predecessors(gid)) for gid in graph})
+    df['fan_out'] = df.gid.map({gid: sum(dst != gid for dst in graph.successors(gid)) for gid in graph})
     df['zero_sum_in'] = df.sum_in.eq(0)
     df['pass_through_ratio'] = df.sum_out / df.sum_in.replace(0, np.nan)
     df['is_depth4_leaf'] = df.depth.eq(4) & df.out_degree.eq(0)
@@ -40,13 +42,35 @@ def calculate(nodes, edges, tx):
             ok &= lag <= np.timedelta64(24, 'h')
         rapid[gid] = float(group.loc[ok, 'sum_kzt'].sum() / group.sum_kzt.sum())
     df['rapid_out_share'] = df.gid.map(rapid).fillna(0)
-    hops = {int(gid): 0 for gid in nodes.loc[nodes.is_seed, 'gid']}
+    seeds = sorted(int(gid) for gid in nodes.loc[nodes.is_seed, 'gid'])
+    hops = {gid: 0 for gid in seeds}
+    paths = {gid: [str(gid)] for gid in seeds}
     queue = deque(sorted(hops))
     while queue:
         src = queue.popleft()
-        for dst in graph.successors(src):
+        for dst in sorted(graph.successors(src)):
             if dst not in hops:
                 hops[dst] = hops[src] + 1
+                paths[dst] = paths[src] + [str(dst)]
                 queue.append(dst)
     df['seed_hops'] = df.gid.map(hops).fillna(-1).astype(int)
+    df['seed_path'] = [paths.get(gid, []) for gid in df.gid]
+    # Bound context to the observation horizon; cycles cannot multiply seeds.
+    reach = {gid: set() for gid in graph}
+    near = {gid: set() for gid in graph}
+    upstream = set()
+    for seed in seeds:
+        distances = nx.single_source_shortest_path_length(graph, seed, cutoff=4)
+        for gid, distance in distances.items():
+            if distance <= 3:
+                upstream.add(gid)
+            if gid != seed:
+                reach[gid].add(seed)
+                if distance <= 2:
+                    near[gid].add(seed)
+    df['reachable_seed_count'] = df.gid.map({gid: len(values) for gid, values in reach.items()})
+    df['near_seed_count'] = df.gid.map({gid: len(values) for gid, values in near.items()})
+    df['seed_branch_count'] = df.gid.map({
+        gid: sum(src != gid and src in upstream for src in graph.predecessors(gid)) for gid in graph
+    })
     return df, graph

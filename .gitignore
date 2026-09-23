@@ -1,3 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
+wheelhouse/
+.verification/
+*.zip
+.run-log.txt
