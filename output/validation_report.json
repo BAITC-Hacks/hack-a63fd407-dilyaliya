@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "checks": [
+    "Exact CSV schemas, nonempty mandatory fields, byte-identical repeat runs",
+    "All nodes preserved; scores, evidence length, top ranks valid",
+    "FIFO preserves amounts per node/ref/scenario and valid temporal direction",
+    "Boundary uncertainty, strong fan-out, stability and cluster sums verified",
+    "Analytical artifacts and HTML deterministic"
+  ],
+  "elapsed_seconds": 8.628,
+  "pipeline_seconds": 1.969,
+  "csv_sha256": {
+    "nodes_roles": "d5018612f215b6ee34b30bac9748e0aa7d18b5828a37a4e4730b090e8b3a46ae",
+    "clusters": "50abb7347b63f2cc121cb15e7e64a7040e6a5ad371e74b32e391ecc17358749d",
+    "top_nodes": "42c49c9bf8ea03ffa1cdb1971cb927253d09620158a7b6c13a7962e7c53a6e91"
+  }
+}

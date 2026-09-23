@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {chromium}=require('playwright');
+(async()=>{
+ const browser=await chromium.launch({headless:true,channel:'chrome'});
+ const page=await browser.newPage({viewport:{width:1200,height:650}});
+ const url=process.env.AML_LIVE_URL||'http://127.0.0.1:8766/graph.html';
+ const response=await page.goto(url);
+ assert.match(response.headers()['cache-control'],/no-store/);
+ await page.waitForFunction(()=>typeof revision!=='undefined'&&revision!==null);
+ const before=await page.evaluate(()=>revision);
+ await page.evaluate(()=>{caseDirty=true;window.reloadSentinel=true});
+ const now=new Date();fs.utimesSync('app/insights.js',now,now);
+ await page.waitForFunction(async value=>(await(await fetch('/__state')).json()).revision>value,before);
+ await page.waitForTimeout(3500);
+ assert.equal(await page.evaluate(()=>window.reloadSentinel),true);
+ await page.evaluate(()=>{caseDirty=false});
+ await page.waitForFunction(()=>window.reloadSentinel===undefined);
+ await page.goto('http://127.0.0.1:8765/docs/architecture.svg');
+ await page.screenshot({path:'/tmp/hackalem-architecture.png'});
+ await browser.close();console.log('Live server passed: no-cache, rebuild, reload, unsaved draft protection.');
+})().catch(e=>{console.error(e);process.exit(1)});

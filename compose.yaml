@@ -1,0 +1,12 @@
+services:
+  aml:
+    build: .
+    image: hackalem-aml:local
+    ports:
+      - "127.0.0.1:8765:8765"
+    volumes:
+      - ./data:/app/data:ro
+      - aml_output:/app/output
+    init: true
+volumes:
+  aml_output:

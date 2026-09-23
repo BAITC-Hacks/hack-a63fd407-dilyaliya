@@ -1,0 +1,10 @@
+{
+  "platform": "macOS arm64",
+  "native_launcher": "passed",
+  "space_in_output_path": "passed",
+  "unit_tests": 13,
+  "wheel_sets_verified": 5,
+  "docker_available": false,
+  "docker_runtime_test": "not run",
+  "other_native_platforms_runtime_test": "not run"
+}
