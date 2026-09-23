@@ -5,3 +5,5 @@ wheelhouse/
 .verification/
 *.zip
 .run-log.txt
+
+.DS_Store

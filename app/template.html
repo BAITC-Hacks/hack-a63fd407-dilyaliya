@@ -7,6 +7,7 @@
   <style>__GRAPH_STYLE__</style>
 </head>
 <body>
+<<<<<<< HEAD
   <div class="app-header">
     <header>
       <div class="brand" aria-hidden="true">ГД</div>
@@ -98,3 +99,25 @@
   <script>__CASE_JS__</script>
 </body>
 </html>
+=======
+<header><div class="brand">ГД</div><div><h1>Граф денег</h1><p class="muted">Рабочее место аналитика · июль 2026</p></div><div id="overview" class="overview"></div><span class="badge">Локальный анализ</span></header>
+<div class="toolbar">
+  <form id="search"><label class="sr-only" for="gid">Поиск gid</label><input id="gid" placeholder="Введите полный gid" autocomplete="off"><button class="primary">Найти узел</button></form>
+  <select id="cluster" aria-label="Кластер"><option value="">Все кластеры</option></select>
+  <select id="role-filter" aria-label="Фильтр роли"><option value="">Все роли</option></select>
+  <label><input id="neighbors" type="checkbox">Связи узла</label>
+  <label><input id="route-only" type="checkbox">Путь от seed</label>
+  <button id="reset" type="button">Вся сеть</button>
+  <button id="insights" type="button">Аналитика и помощник</button>
+</div>
+<main>
+  <aside class="candidates" aria-label="Приоритетные узлы"><div class="section-title"><h2 id="top-title">Приоритетные узлы</h2><span class="badge">Топ</span></div><p class="muted">Выберите узел для проверки. Список остаётся доступным при переходах.</p><div id="stability"></div><div id="top"></div></aside>
+  <section class="graph-area" aria-label="Граф переводов"><div id="legend"></div><div id="stage"><canvas id="canvas" aria-label="Направленный граф; используйте поиск и список для выбора узла"></canvas><div id="stats" role="status"></div><div class="graph-help">Колесо — масштаб · перетаскивание — перемещение<br>Белая обводка — seed · янтарный путь — от seed</div></div><div id="cluster-summary" class="cluster-summary"></div></section>
+  <aside class="inspector" aria-label="Карточка узла"><div class="section-title"><h2>Карточка узла</h2><button id="export-card" type="button" disabled>Скачать</button></div><details id="card-preview" hidden><summary>Текст карточки готов</summary><p class="muted">Если браузер не сохранил файл, скопируйте текст ниже.</p><textarea id="card-text" aria-label="Текст карточки" readonly></textarea></details><div id="node-detail" aria-live="polite"></div></aside>
+</main>
+<footer>Роли и приоритеты — гипотезы для ручной проверки. Отсутствие выхода на 4-м колене может быть обрывом выборки. Балл не является вероятностью нарушения.</footer>
+<dialog id="caseDialog" aria-labelledby="caseTitle"><div id="caseContent"></div></dialog>
+<dialog id="insightsDialog" aria-labelledby="insightTitle"><div class="case-head"><h2 id="insightTitle">Аналитика сети</h2><button id="closeInsights">Закрыть</button></div><div id="insightTabs" class="case-actions"></div><div id="insightBody"></div></dialog>
+<script>const data=__GRAPH_DATA__;</script><script>__GRAPH_SCRIPT__</script><script>__CASE_JS__</script><script>__INSIGHTS_JS__</script>
+</body></html>
+>>>>>>> origin/main
