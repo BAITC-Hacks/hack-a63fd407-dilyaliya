@@ -48,5 +48,10 @@ def build(df, edges, tx, graph, destination, clusters=None, analytics=None, demo
     template = Path(__file__).with_name('template.html').read_text(encoding='utf-8')
     template = template.replace('__GRAPH_STYLE__', Path(__file__).with_name('style.css').read_text(encoding='utf-8'))
     template = template.replace('__GRAPH_SCRIPT__', Path(__file__).with_name('view.js').read_text(encoding='utf-8'))
-    template = template.replace('__ASSISTANT_JS__', Path(__file__).with_name('assistant.js').read_text(encoding='utf-8'))
+<<<<<<< HEAD
+    template = template.replace('__GRAPH_ENGINE__', Path(__file__).with_name('graph.js').read_text(encoding='utf-8'))
+    template = template.replace('__CASE_JS__', Path(__file__).with_name('cases.js').read_text(encoding='utf-8'))
+    Path(destination).write_text(template.replace('__GRAPH_DATA__', payload), encoding='utf-8')
+=======
     Path(destination).write_text(template.replace('__GRAPH_DATA__', payload).replace('__CASE_JS__', Path(__file__).with_name('cases.js').read_text(encoding='utf-8')).replace('__INSIGHTS_JS__', Path(__file__).with_name('insights.js').read_text(encoding='utf-8')), encoding='utf-8')
+>>>>>>> origin/main
