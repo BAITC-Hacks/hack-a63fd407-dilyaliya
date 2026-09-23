@@ -1,23 +1,100 @@
 <!doctype html>
 <html lang="ru">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Граф денег · Рабочее место аналитика</title><style>__GRAPH_STYLE__</style></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Граф денег · Рабочее место аналитика</title>
+  <style>__GRAPH_STYLE__</style>
+</head>
 <body>
-<header><div class="brand">ГД</div><div><h1>Граф денег</h1><p class="muted">Рабочее место аналитика · июль 2026</p></div><div id="overview" class="overview"></div><span class="badge">Локальный анализ</span></header>
-<div class="toolbar">
-  <form id="search"><label class="sr-only" for="gid">Поиск gid</label><input id="gid" placeholder="Введите полный gid" autocomplete="off"><button class="primary">Найти узел</button></form>
-  <select id="cluster" aria-label="Кластер"><option value="">Все кластеры</option></select>
-  <select id="role-filter" aria-label="Фильтр роли"><option value="">Все роли</option></select>
-  <label><input id="neighbors" type="checkbox">Связи узла</label>
-  <label><input id="route-only" type="checkbox">Путь от seed</label>
-  <button id="reset" type="button">Вся сеть</button>
-</div>
-<main>
-  <aside class="candidates" aria-label="Приоритетные узлы"><div class="section-title"><h2 id="top-title">Приоритетные узлы</h2><span class="badge">Топ</span></div><p class="muted">Выберите узел для проверки. Список остаётся доступным при переходах.</p><div id="stability"></div><div id="top"></div></aside>
-  <section class="graph-area" aria-label="Граф переводов"><div id="legend"></div><div id="stage"><canvas id="canvas" aria-label="Направленный граф; используйте поиск и список для выбора узла"></canvas><div id="stats" role="status"></div><div class="graph-help">Колесо — масштаб · перетаскивание — перемещение<br>Белая обводка — seed · янтарный путь — от seed</div></div><div id="cluster-summary" class="cluster-summary"></div></section>
-  <aside class="inspector" aria-label="Карточка узла"><div class="section-title"><h2>Карточка узла</h2><button id="export-card" type="button" disabled>Скачать</button></div><details id="card-preview" hidden><summary>Текст карточки готов</summary><p class="muted">Если браузер не сохранил файл, скопируйте текст ниже.</p><textarea id="card-text" aria-label="Текст карточки" readonly></textarea></details><div id="node-detail" aria-live="polite"></div></aside>
-</main>
-<footer>Роли и приоритеты — гипотезы для ручной проверки. Отсутствие выхода на 4-м колене может быть обрывом выборки. Балл не является вероятностью нарушения.</footer>
-<dialog id="caseDialog" aria-labelledby="caseTitle"><div id="caseContent"></div></dialog>
-<script>const data=__GRAPH_DATA__;</script><script>__GRAPH_SCRIPT__</script><script>__CASE_JS__</script>
-</body></html>
+  <div class="app-header">
+    <header>
+      <div class="brand" aria-hidden="true">ГД</div>
+      <div><h1>Граф денег</h1><p class="muted">Анализ переводов · июль 2026</p></div>
+      <div id="overview" class="overview"></div>
+      <span class="local-label">Локально · без облака</span>
+    </header>
+    <div class="toolbar">
+      <form id="search" role="search">
+        <div class="search-field">
+          <label class="sr-only" for="gid">Поиск gid</label>
+          <input id="gid" type="text" inputmode="numeric" placeholder="Найти участника по gid"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false"
+                 aria-controls="suggestions" autocomplete="off" spellcheck="false">
+          <div id="search-popup" class="search-popup" hidden>
+            <ul id="suggestions" role="listbox" aria-label="Найденные участники"></ul>
+            <p id="suggestion-count" class="muted"></p>
+          </div>
+        </div>
+        <button type="submit" class="primary">Найти</button>
+      </form>
+      <label class="cluster-picker">Перейти к кластеру
+        <select id="cluster" aria-label="Перейти к кластеру"><option value="">Обзор сети</option></select>
+      </label>
+      <button id="reset" type="button">Вся сеть</button>
+    </div>
+    <div id="announcement" class="announcement" role="status" aria-live="polite"></div>
+  </div>
+  <nav class="mobile-tabs" aria-label="Рабочая область">
+    <button type="button" data-panel="graph" aria-pressed="true">Граф</button>
+    <button type="button" data-panel="top" aria-pressed="false">Топ-30</button>
+    <button type="button" data-panel="detail" aria-pressed="false">Карточка</button>
+  </nav>
+  <main data-panel="graph">
+    <aside class="candidates" aria-label="Приоритетные узлы">
+      <div class="section-title"><h2 id="top-title">Приоритетные узлы</h2><span class="badge">Топ</span></div>
+      <p class="muted">Очередь ручной проверки. Нажмите на участника, чтобы увидеть его связи.</p>
+      <details id="stability"><summary>Устойчивость приоритета</summary><p class="muted"></p></details>
+      <div id="top"></div>
+    </aside>
+    <section class="graph-area" aria-label="Граф переводов">
+      <div class="graph-toolbar">
+        <div><h2 id="view-title">Обзор сети</h2><span id="stats" class="muted"></span></div>
+        <div class="scope-controls" role="group" aria-label="Область графа">
+          <label><input id="neighbors" type="checkbox" disabled>Один шаг</label>
+          <label><input id="route-only" type="checkbox" disabled>Путь от seed</label>
+        </div>
+      </div>
+      <div class="plot-row">
+        <div id="stage">
+          <canvas id="canvas" tabindex="0" aria-label="Граф переводов. Стрелки клавиатуры перемещают граф; плюс и минус меняют масштаб; Home показывает всё. Для выбора участника используйте поиск или топ."></canvas>
+          <div id="graph-tooltip" class="graph-tooltip" role="tooltip" hidden></div>
+          <div id="empty-graph" class="empty-graph" hidden><strong>Нет видимых участников</strong><p>Включите роли в легенде.</p><button id="restore-roles" type="button">Показать все роли</button></div>
+        </div>
+        <div class="view-controls" role="group" aria-label="Навигация по графу">
+          <button id="zoom-in" type="button" aria-label="Приблизить" title="Приблизить (+)">+</button>
+          <output id="zoom-level" aria-label="Масштаб">100%</output>
+          <button id="zoom-out" type="button" aria-label="Отдалить" title="Отдалить (−)">−</button>
+          <span class="control-divider"></span>
+          <button id="fit-selection" type="button" aria-label="Уместить выбранное и его связи" title="Уместить выбранное и его связи (Fit to selection)" disabled>◎</button>
+          <span class="control-caption">Фокус</span>
+          <button id="fit-all" type="button" aria-label="Показать всё" title="Показать всё (Home)">⌂</button>
+          <span class="control-caption">Всё</span>
+        </div>
+      </div>
+      <div class="graph-footer">
+        <p class="graph-help">Колесо / два пальца — масштаб · перетаскивание — перемещение</p>
+        <p id="flow-key" class="muted" hidden><span class="incoming">→ К выбранному</span> · <span class="outgoing">→ От выбранного</span> · остальная сеть приглушена</p>
+        <details id="legend-panel">
+          <summary>Роли и обозначения <span id="role-count">6 из 6</span></summary>
+          <div id="legend" role="group" aria-label="Видимые роли"></div>
+          <p class="muted">Внешнее кольцо — seed, исходный участник. Форма дублирует цвет роли.</p>
+          <p id="edge-key" class="muted"></p>
+        </details>
+        <details id="cluster-info"><summary id="cluster-title">О кластерах</summary><div id="cluster-summary"></div></details>
+      </div>
+    </section>
+    <aside class="inspector" aria-label="Карточка узла">
+      <div class="section-title"><h2>Карточка участника</h2><button id="export-card" type="button" disabled>Текст</button></div>
+      <details id="card-preview" hidden><summary>Текст карточки готов</summary><p class="muted">Можно скопировать текст или сохранить предложенный TXT-файл.</p><textarea id="card-text" aria-label="Текст карточки" readonly></textarea></details>
+      <div id="node-detail"></div>
+    </aside>
+  </main>
+  <footer>Роли — гипотезы для проверки. Балл не означает вероятность нарушения. Граница 4-го колена может скрывать дальнейшие переводы.</footer>
+  <dialog id="caseDialog" aria-labelledby="caseTitle"><div id="caseContent"></div></dialog>
+  <script>const data=__GRAPH_DATA__;</script>
+  <script>__GRAPH_ENGINE__</script>
+  <script>__GRAPH_SCRIPT__</script>
+  <script>__CASE_JS__</script>
+</body>
+</html>

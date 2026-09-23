@@ -40,5 +40,6 @@ def build(df, edges, destination, clusters=None, top=None, stability=None, tx=No
     template = Path(__file__).with_name('template.html').read_text(encoding='utf-8')
     template = template.replace('__GRAPH_STYLE__', Path(__file__).with_name('style.css').read_text(encoding='utf-8'))
     template = template.replace('__GRAPH_SCRIPT__', Path(__file__).with_name('view.js').read_text(encoding='utf-8'))
+    template = template.replace('__GRAPH_ENGINE__', Path(__file__).with_name('graph.js').read_text(encoding='utf-8'))
     template = template.replace('__CASE_JS__', Path(__file__).with_name('cases.js').read_text(encoding='utf-8'))
     Path(destination).write_text(template.replace('__GRAPH_DATA__', payload), encoding='utf-8')
