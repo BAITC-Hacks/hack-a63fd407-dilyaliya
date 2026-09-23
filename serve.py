@@ -8,15 +8,18 @@ import subprocess
 import sys
 import threading
 import time
+from urllib.parse import urlsplit
+from aml_assistant.service import AssistantService
 
 ROOT = Path(__file__).resolve().parent
 STATE = {'revision':0,'error':None,'building':False}
+ASSISTANT = None
 RELOAD = '''<script>
 let revision=null;
 setInterval(async()=>{try{const s=await(await fetch('/__state',{cache:'no-store'})).json();
 if(s.error){document.title='Ошибка пересборки — AML';return}
 if(revision===null){revision=s.revision;return}
-if(s.revision!==revision && !s.building && !(typeof caseDirty!=='undefined' && caseDirty)){location.reload()}
+if(s.revision!==revision && !s.building && !(typeof caseDirty!=='undefined' && caseDirty) && !(typeof assistantBusy!=='undefined' && assistantBusy)){location.reload()}
 }catch(e){}},1500);
 </script>'''.encode('utf-8')
 
@@ -60,7 +63,9 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split('?',1)[0]
-        if path=='/__state':
+        if path == '/api/assistant/status':
+            return self.send_json(200, ASSISTANT.status() if ASSISTANT else {'available':False, 'reason':'LLM не запущен.'})
+        elif path=='/__state':
             body=json.dumps(STATE).encode()
             mime='application/json'
         elif path in ('/','/graph.html','/output/graph.html'):
@@ -73,6 +78,44 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Content-Length',str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def send_json(self, status, value):
+        body = json.dumps(value, ensure_ascii=False).encode('utf-8')
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        try:
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
+    def do_POST(self):
+        if self.path != '/api/assistant/ask':
+            return self.send_json(404, {'error':'Маршрут не найден.'})
+        host = self.headers.get('Host', '')
+        origin = self.headers.get('Origin')
+        try:
+            local = urlsplit('http://' + host).hostname in ('127.0.0.1', 'localhost', '::1')
+        except ValueError:
+            local = False
+        if (not local or (origin and origin != 'http://' + host)
+                or self.headers.get('X-AML-Request') != '1'
+                or self.headers.get_content_type() != 'application/json'):
+            return self.send_json(403, {'error':'Разрешены только локальные запросы из интерфейса проекта.'})
+        try:
+            length = int(self.headers.get('Content-Length', '0'))
+            if not 0 < length <= 16000:
+                return self.send_json(413, {'error':'Запрос слишком большой или пустой.'})
+            body = json.loads(self.rfile.read(length))
+        except (ValueError, UnicodeDecodeError):
+            return self.send_json(400, {'error':'Некорректный JSON.'})
+        if STATE['building']:
+            return self.send_json(409, {'error':'Идёт пересчёт графа. Повторите запрос после завершения.'})
+        if ASSISTANT is None:
+            return self.send_json(503, {'error':'Помощник не инициализирован.'})
+        status, result = ASSISTANT.ask(body)
+        self.send_json(status, result)
 
 
 if __name__=='__main__':
@@ -87,9 +130,17 @@ if __name__=='__main__':
     rebuild()
     if STATE['error']:
         raise SystemExit(STATE['error'])
+    ASSISTANT = AssistantService(ROOT)
+    if ASSISTANT.runtime.info['installed']:
+        print('Загрузка локального LLM на CPU…', flush=True)
+        ASSISTANT.runtime.start()
+    print(json.dumps(ASSISTANT.runtime.status(), ensure_ascii=False), flush=True)
     threading.Thread(target=watch,daemon=True).start()
     print(f'Открыть http://127.0.0.1:{args.port}/graph.html — пересборка и обновление включены',flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
+        pass
+    finally:
         server.server_close()
+        ASSISTANT.runtime.stop()

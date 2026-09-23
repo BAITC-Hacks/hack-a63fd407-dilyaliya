@@ -66,7 +66,7 @@ def verify():
             internal=edges[edges.src.map(membership).eq(row.cluster_id)&edges.dst.map(membership).eq(row.cluster_id)]
             assert np.isclose(row.sum_kzt_internal,internal.sum_kzt.sum())
         checks.append('Boundary uncertainty, strong fan-out, stability and cluster sums verified')
-        for file in ('node_metrics.parquet','temporal_matches.parquet','stability.parquet','analytics.json','graph.html','demo_cases.json','ranking_sensitivity.csv'):
+        for file in ('node_metrics.parquet','temporal_matches.parquet','stability.parquet','analytics.json','graph.html','demo_cases.json','ranking_sensitivity.csv','assistant_data.json'):
             assert (first/file).read_bytes()==(second/file).read_bytes(),file+' reproducibility'
         checks.append('Analytical artifacts and HTML deterministic')
         report={'status':'passed','checks':checks,'elapsed_seconds':round(time.perf_counter()-start,3),

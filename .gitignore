@@ -7,3 +7,4 @@ wheelhouse/
 .run-log.txt
 
 .DS_Store
+.local_ai/

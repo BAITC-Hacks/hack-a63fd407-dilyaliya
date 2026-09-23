@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
-<rect width="1200" height="650" fill="#0d1524"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820">
+<rect width="1200" height="820" fill="#0d1524"/>
 <style>text{font-family:Arial,sans-serif;fill:#edf3ff} .title{font-size:32px;font-weight:bold}.h{font-size:20px;font-weight:bold}.p{font-size:16px}.b{fill:#172a44;stroke:#557398;stroke-width:2}.a{stroke:#57c8fa;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
 <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#57c8fa"/></marker></defs>
 <text x="45" y="55" class="title">Граф переводов → объяснимый приоритет проверки</text>
@@ -13,6 +13,11 @@
 <rect x="645" y="355" width="480" height="180" rx="14" class="b"/><text x="665" y="390" class="h">4. Проверка гипотез и выдача</text><text x="665" y="425" class="p">Циклы, маршруты, аномалии, 14 сценариев порогов</text><text x="665" y="455" class="p">Удаление top-N и случайный контроль</text><text x="665" y="485" class="p">3 CSV + метрики + отчёт воспроизводимости</text>
 <path d="M645,445 L605,445" class="a"/>
 <rect x="45" y="355" width="550" height="180" rx="14" class="b"/><text x="65" y="390" class="h">5. Рабочее место аналитика</text><text x="65" y="425" class="p">Граф, поиск, направления, пути и локальный помощник</text><text x="65" y="455" class="p">Карточка, операции, история, запрос недостающих данных</text><text x="65" y="485" class="p">Справка HTML / JSON → ручная проверка специалистом</text>
-<text x="45" y="590" class="h">Выход — проверяемые гипотезы. Роль и score не устанавливают виновность.</text>
-<text x="45" y="620" class="p">Сеть ограничена одним банком, июлем 2026, 4 коленами и порогом 5000 KZT.</text>
+<path d="M320,535 L320,570" class="a"/>
+<rect x="45" y="580" width="1080" height="130" rx="14" class="b"/>
+<text x="65" y="615" class="h">6. Локальный LLM-агент · Qwen3 + llama.cpp · только CPU</text>
+<text x="65" y="648" class="p">Вопрос → план → вызовы 8 инструментов Python → наблюдение результатов → ответ с фактами E1, E2…</text>
+<text x="65" y="681" class="p">Контроль выполнения плана и ссылок · журнал и JSON · чтение графа · роли и CSV не меняются</text>
+<text x="45" y="760" class="h">Выход — проверяемые гипотезы. Роль и score не устанавливают виновность.</text>
+<text x="45" y="792" class="p">Сеть ограничена одним банком, июлем 2026, 4 коленами и порогом 5000 KZT.</text>
 </svg>

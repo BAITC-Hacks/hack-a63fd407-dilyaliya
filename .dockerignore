@@ -7,10 +7,14 @@
 !pipeline/**
 !app/
 !app/**
+!aml_assistant/
+!aml_assistant/**
 !data/
 !data/*.parquet
 !scripts/
 !scripts/setup_env.py
+!scripts/setup_llm.py
+!scripts/llm_assets.json
 !vendor/
 !vendor/wheels/
 !vendor/wheels/manifest.json

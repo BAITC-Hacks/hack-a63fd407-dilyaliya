@@ -1,0 +1,20 @@
+{
+  "engine_version": "b11125",
+  "engine_source": "https://github.com/ggml-org/llama.cpp/releases/tag/b11125",
+  "engine_assets": {
+    "Darwin-arm64": {"name": "llama-b11125-bin-macos-arm64.tar.gz", "sha256": "c025c0ea392a947919a5889a2646485b669f1dda0a0b021b2606d5d7a53ffca5"},
+    "Darwin-x86_64": {"name": "llama-b11125-bin-macos-x64.tar.gz", "sha256": "2b15a35b65aff0fe26a60b21610e4ce0323c1bcaee55edb4316d526ffee07d3e"},
+    "Linux-arm64": {"name": "llama-b11125-bin-ubuntu-arm64.tar.gz", "sha256": "7686c8f502cc047f004fee4dd12bea3030b40d077b4a98c69f0a3e6c9c3c59d6"},
+    "Linux-x86_64": {"name": "llama-b11125-bin-ubuntu-x64.tar.gz", "sha256": "3d18a45257ca5076d460f4dc844f0d459f5c6f67cabe3c4ebdfe2ef8169b72ef"},
+    "Windows-x86_64": {"name": "llama-b11125-bin-win-cpu-x64.zip", "sha256": "de1f437d53c74cdbda8e2071e3f468e31eee26b12a9d73b12d4969c4f0271372"}
+  },
+  "model": {
+    "name": "Qwen3-1.7B-Q8_0.gguf",
+    "repository": "Qwen/Qwen3-1.7B-GGUF",
+    "revision": "90862c4b9d2787eaed51d12237eafdfe7c5f6077",
+    "size": 1834426016,
+    "sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+    "license": "Apache-2.0",
+    "source": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF"
+  }
+}

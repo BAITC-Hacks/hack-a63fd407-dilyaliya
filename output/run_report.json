@@ -265,5 +265,5 @@
     "nodes.parquet": "d2a45b0df6e9352832d5fb09839d10b9e23f898156c3bab263b051b31cc0296d",
     "transactions.parquet": "c30c5317b5439591dde86f2058dc47a3d19b2900c055ded994fe547f6fb7e7da"
   },
-  "elapsed_seconds": 2.24
+  "elapsed_seconds": 3.017
 }

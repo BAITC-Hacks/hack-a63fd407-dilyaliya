@@ -9,6 +9,7 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelector('#stats').textContent.includes('2248'));
   await page.locator('#insights').click();
   for(const tab of ['Кластеры','Паттерны','Устойчивость','Помощник'])await page.locator('#insightTabs button').filter({hasText:tab}).click();
+  await page.locator('#assistantMode').selectOption('rules');
   await page.locator('#assistantQuestion').fill('Кого смотреть первым?');
   await page.locator('#assistantForm button').click();
   assert.equal(await page.locator('#assistantAnswer .link').count(),20);

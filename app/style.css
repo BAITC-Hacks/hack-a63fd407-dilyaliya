@@ -9,3 +9,5 @@ dialog{background:#172236;color:#e5edf8;border:1px solid #536784;border-radius:1
 
 
 #insightsDialog table{border-collapse:collapse;width:100%;font-size:12px}#insightsDialog td,#insightsDialog th{padding:8px;border-bottom:1px solid #536784;text-align:left}#insightBody{margin-top:18px}#insightsDialog details{margin:12px 0}
+
+#assistantQuestion{display:block;width:100%;background:#1a2a3e;color:var(--text);border:1px solid #43566e;border-radius:7px;padding:12px;margin:10px 0;font:inherit;resize:vertical}.assistant-fact{margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:8px}#assistantAnswer pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}#assistantAnswer details{margin:12px 0}

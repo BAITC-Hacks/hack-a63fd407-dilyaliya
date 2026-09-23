@@ -7,8 +7,8 @@
     "Boundary uncertainty, strong fan-out, stability and cluster sums verified",
     "Analytical artifacts and HTML deterministic"
   ],
-  "elapsed_seconds": 8.628,
-  "pipeline_seconds": 1.969,
+  "elapsed_seconds": 10.417,
+  "pipeline_seconds": 2.446,
   "csv_sha256": {
     "nodes_roles": "d5018612f215b6ee34b30bac9748e0aa7d18b5828a37a4e4730b090e8b3a46ae",
     "clusters": "50abb7347b63f2cc121cb15e7e64a7040e6a5ad371e74b32e391ecc17358749d",

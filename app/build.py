@@ -2,6 +2,8 @@ import hashlib
 import json
 from app.cases import case_context
 import math
+import os
+import tempfile
 from pathlib import Path
 from pipeline.roles import RULE_VERSION
 
@@ -35,7 +37,16 @@ def build(df, edges, tx, graph, destination, clusters=None, analytics=None, demo
                           'top':top_records, 'stability':stability or [],
                           'clusters': [] if clusters is None else clusters.to_dict(orient='records'),
                           'analytics':analytics or {}, 'demo':demo or []}, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c')
+    snapshot = json.loads(payload)
+    snapshot['analysis_sha256'] = hashlib.sha256(payload.encode('utf-8')).hexdigest()
+    payload = json.dumps(snapshot, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c')
+    # Atomic publication avoids exposing partially written data to an active assistant.
+    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=Path(destination).parent, delete=False) as tmp:
+        tmp.write(payload)
+        temporary = tmp.name
+    os.replace(temporary, Path(destination).with_name('assistant_data.json'))
     template = Path(__file__).with_name('template.html').read_text(encoding='utf-8')
     template = template.replace('__GRAPH_STYLE__', Path(__file__).with_name('style.css').read_text(encoding='utf-8'))
     template = template.replace('__GRAPH_SCRIPT__', Path(__file__).with_name('view.js').read_text(encoding='utf-8'))
+    template = template.replace('__ASSISTANT_JS__', Path(__file__).with_name('assistant.js').read_text(encoding='utf-8'))
     Path(destination).write_text(template.replace('__GRAPH_DATA__', payload).replace('__CASE_JS__', Path(__file__).with_name('cases.js').read_text(encoding='utf-8')).replace('__INSIGHTS_JS__', Path(__file__).with_name('insights.js').read_text(encoding='utf-8')), encoding='utf-8')

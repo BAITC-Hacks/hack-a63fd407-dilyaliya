@@ -13,6 +13,8 @@ WORKDIR /app
 COPY --from=dependencies /opt/venv /opt/venv
 COPY pipeline/ pipeline/
 COPY app/ app/
+COPY aml_assistant/ aml_assistant/
+COPY scripts/setup_llm.py scripts/llm_assets.json scripts/
 COPY data/ data/
 COPY run_pipeline.py serve.py ./
 RUN groupadd --gid 10001 aml && useradd --uid 10001 --gid 10001 --no-create-home aml && mkdir output && chown aml:aml output
