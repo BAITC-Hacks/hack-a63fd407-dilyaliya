@@ -60,9 +60,16 @@ def summarize(df, edges):
         else:
             purpose = 'смешанный внутренний обмен; выраженное назначение не установлено'
         boundary = int(group.is_depth4_leaf.sum())
+        internal_receipts = edges.loc[source_here & target_here].groupby('dst').sum_kzt.sum()
+        concentration = float(internal_receipts.max() / inside) if inside else 0.
+        internal_out_share = inside / (inside + outgoing) if inside + outgoing else 0.
+        coordinators = int(group.role.eq('coordinator').sum())
         hypothesis = (f'Гипотеза: {purpose}. Внутренние переводы {inside:,.0f} KZT '
                       f'({share:.1%} суммы внутренних и пересекающих границу переводов); '
                       f'внешний вход {incoming:,.0f}, внешний выход {outgoing:,.0f} KZT. '
+                      f'Seed: {int(group.is_seed.sum())}; coordinator: {coordinators}. '
+                      f'Концентрация на крупнейшем внутреннем получателе {concentration:.1%}; '
+                      f'внутри среди исходящих переводов участников {internal_out_share:.1%}. '
                       f'Основные получатели переводов участников: {recipients_text}. '
                       f'Граница 4-го колена: {boundary}/{len(group)} узл. '
                       'Проверить полные выписки и назначения платежей; роль сообщества не доказана.')

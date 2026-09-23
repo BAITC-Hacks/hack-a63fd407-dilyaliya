@@ -10,8 +10,11 @@ import pandas as pd
 from pipeline.load import load, require
 from pipeline.metrics import calculate
 from pipeline.roles import assign, ROLES
+from pipeline.temporal import amount_matching
+from pipeline.analytics import investigate, sensitivity, robustness
+from pipeline.deliverables import write_demo
 from pipeline.clustering import detect, summarize
-from pipeline.ranking import rank, sensitivity, WEIGHTS
+from pipeline.ranking import rank, sensitivity as weight_sensitivity, WEIGHTS
 from app.build import build
 
 ROOT = Path(__file__).resolve().parent
@@ -28,13 +31,21 @@ def main():
     start = perf_counter()
     nodes, edges, tx = load(args.data)
     df, graph = calculate(nodes, edges, tx)
+    temporal, matches = amount_matching(nodes, tx)
+    df = df.merge(temporal, on="gid", validate="one_to_one")
+    df, patterns = investigate(df, graph, tx, matches)
     df, thresholds = assign(df)
     membership, components = detect(graph)
     df['cluster_id'] = df.gid.map(membership)
     df, top = rank(df, args.top)
-    scenarios, stability = sensitivity(df, args.top)
-    ranges = scenarios.groupby('gid')['rank'].agg(rank_min='min', rank_max='max')
+    stability, scenarios = sensitivity(df)
+    stability = stability.rename(columns={'rank_min':'threshold_rank_min', 'rank_max':'threshold_rank_max'})
+    df = df.merge(stability, on="gid", validate="one_to_one")
+    df, top = rank(df, args.top)
+    weight_scenarios, weight_summary = weight_sensitivity(df, args.top)
+    ranges = weight_scenarios.groupby('gid')['rank'].agg(rank_min='min', rank_max='max')
     df = df.join(ranges, on='gid')
+    impact = robustness(df, graph)
     clusters = summarize(df, edges)
     roles = df[NODE_COLUMNS]
     require(len(roles) == len(nodes) and roles.gid.is_unique, 'Потеря/дублирование узлов')
@@ -53,20 +64,27 @@ def main():
         table.to_csv(target, index=False, encoding='utf-8')
         require(pd.read_csv(target).shape == table.shape, f'Ошибка чтения {target}')
     df.to_parquet(args.out / 'node_metrics.parquet', index=False)
-    scenarios.to_csv(args.out / 'ranking_sensitivity.csv', index=False, encoding='utf-8')
-    build(df, edges, args.out / 'graph.html', clusters, top, stability, tx=tx, graph=graph)
+    matches.to_parquet(args.out / 'temporal_matches.parquet', index=False)
+    stability.to_parquet(args.out / 'stability.parquet', index=False)
+    weight_scenarios.to_csv(args.out / 'ranking_sensitivity.csv', index=False, encoding='utf-8')
+    analytics = {'patterns':patterns, 'sensitivity':scenarios, 'robustness':impact}
+    (args.out / 'analytics.json').write_text(json.dumps(analytics, ensure_ascii=False, indent=2), encoding='utf-8')
+    demo = write_demo(df, args.out)
+    build(df, edges, tx, graph, args.out / 'graph.html', clusters=clusters, analytics=analytics,
+          demo=demo, top=top, stability=weight_summary)
     report = dict(nodes=len(nodes), edges=len(edges), transactions=len(tx), seeds=int(nodes.is_seed.sum()),
                   weak_components=len(components), smallest_component=min(map(len, components)),
                   components_with_edges=sum(len(c) > 1 or graph.subgraph(c).number_of_edges() > 0 for c in components),
                   isolated_nodes=sum(graph.degree(gid) == 0 for gid in graph),
                   clusters=len(clusters), depth4_leaves=int(df.is_depth4_leaf.sum()),
                   roles=df.role.value_counts().to_dict(), thresholds=thresholds,
-                  ranking_weights=WEIGHTS, ranking_sensitivity=stability,
-                  python=platform.python_version(),
-                  dependencies={name: version(name) for name in ['pandas', 'numpy', 'pyarrow', 'networkx']},
-                  input_sha256={p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                                for p in sorted(args.data.glob('*.parquet'))},
+                  ranking_weights=WEIGHTS, ranking_sensitivity=weight_summary,
                   transaction_dates_day_only=bool(tx.date.eq(tx.date.dt.normalize()).all()),
+                  cycles=len(patterns['cycles']), repeated_routes=len(patterns['repeated_routes']),
+                  sensitivity_scenarios=len(scenarios),
+                  python_version=platform.python_version(),
+                  dependency_versions={name:version(name) for name in ('pandas','numpy','networkx','pyarrow')},
+                  input_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(args.data.glob('*.parquet'))},
                   elapsed_seconds=round(perf_counter()-start, 3))
     (args.out / 'run_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(report, ensure_ascii=False, indent=2))

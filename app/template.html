@@ -11,6 +11,7 @@
   <label><input id="neighbors" type="checkbox">Связи узла</label>
   <label><input id="route-only" type="checkbox">Путь от seed</label>
   <button id="reset" type="button">Вся сеть</button>
+  <button id="insights" type="button">Аналитика и помощник</button>
 </div>
 <main>
   <aside class="candidates" aria-label="Приоритетные узлы"><div class="section-title"><h2 id="top-title">Приоритетные узлы</h2><span class="badge">Топ</span></div><p class="muted">Выберите узел для проверки. Список остаётся доступным при переходах.</p><div id="stability"></div><div id="top"></div></aside>
@@ -19,5 +20,6 @@
 </main>
 <footer>Роли и приоритеты — гипотезы для ручной проверки. Отсутствие выхода на 4-м колене может быть обрывом выборки. Балл не является вероятностью нарушения.</footer>
 <dialog id="caseDialog" aria-labelledby="caseTitle"><div id="caseContent"></div></dialog>
-<script>const data=__GRAPH_DATA__;</script><script>__GRAPH_SCRIPT__</script><script>__CASE_JS__</script>
+<dialog id="insightsDialog" aria-labelledby="insightTitle"><div class="case-head"><h2 id="insightTitle">Аналитика сети</h2><button id="closeInsights">Закрыть</button></div><div id="insightTabs" class="case-actions"></div><div id="insightBody"></div></dialog>
+<script>const data=__GRAPH_DATA__;</script><script>__GRAPH_SCRIPT__</script><script>__CASE_JS__</script><script>__INSIGHTS_JS__</script>
 </body></html>

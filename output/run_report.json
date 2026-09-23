@@ -11,23 +11,23 @@
   "depth4_leaves": 444,
   "roles": {
     "terminal": 1527,
-    "peripheral": 542,
-    "distributor": 126,
-    "transit": 32,
+    "peripheral": 538,
+    "distributor": 129,
+    "transit": 33,
     "consolidator": 20,
     "coordinator": 1
   },
   "thresholds": {
     "high_fan": 5,
-    "coordinator_volume_p90_kzt": 741811.6999999997,
-    "coordinator_near_seeds_min": 2,
-    "coordinator_seed_hops_max": 2,
-    "coordinator_branches_min": 2,
-    "coordinator_fan_balance_max": 2,
-    "distributor_fan_ratio_min": 2,
-    "distributor_pass_ratio_alternative": 0.8,
     "low_ratio": 0.2,
-    "rapid_share_transit_only": 0.5
+    "transit_tolerance": 0.2,
+    "fan_balance": 2.0,
+    "rapid_share": 0.5,
+    "coordinator_quantile": 0.9,
+    "coordinator_near_seeds": 2,
+    "coordinator_branches": 2,
+    "coordinator_volume_p90_kzt": 741811.6999999997,
+    "rule_version": "3.0"
   },
   "ranking_weights": {
     "role": 0.15,
@@ -71,17 +71,17 @@
     {
       "scenario": "role_1.2",
       "weights": {
-        "role": 0.17475728155339804,
-        "volume": 0.24271844660194175,
-        "fan": 0.24271844660194175,
-        "seed": 0.0970873786407767,
-        "context": 0.0970873786407767,
-        "collection": 0.14563106796116504
+        "role": 0.1747572815533981,
+        "volume": 0.2427184466019418,
+        "fan": 0.2427184466019418,
+        "seed": 0.09708737864077673,
+        "context": 0.09708737864077673,
+        "collection": 0.14563106796116507
       },
-      "top_overlap": 29,
+      "top_overlap": 30,
       "top_size": 30,
-      "top_overlap_share": 0.9666666666666667,
-      "max_top_rank_shift": 2
+      "top_overlap_share": 1.0,
+      "max_top_rank_shift": 3
     },
     {
       "scenario": "volume_0.8",
@@ -93,24 +93,24 @@
         "context": 0.10526315789473685,
         "collection": 0.15789473684210525
       },
-      "top_overlap": 29,
+      "top_overlap": 30,
       "top_size": 30,
-      "top_overlap_share": 0.9666666666666667,
-      "max_top_rank_shift": 4
+      "top_overlap_share": 1.0,
+      "max_top_rank_shift": 3
     },
     {
       "scenario": "volume_1.2",
       "weights": {
-        "role": 0.14285714285714285,
-        "volume": 0.2857142857142857,
-        "fan": 0.23809523809523808,
-        "seed": 0.09523809523809523,
-        "context": 0.09523809523809523,
-        "collection": 0.14285714285714285
+        "role": 0.14285714285714288,
+        "volume": 0.28571428571428575,
+        "fan": 0.23809523809523814,
+        "seed": 0.09523809523809526,
+        "context": 0.09523809523809526,
+        "collection": 0.14285714285714288
       },
-      "top_overlap": 29,
+      "top_overlap": 30,
       "top_size": 30,
-      "top_overlap_share": 0.9666666666666667,
+      "top_overlap_share": 1.0,
       "max_top_rank_shift": 3
     },
     {
@@ -118,30 +118,30 @@
       "weights": {
         "role": 0.15789473684210525,
         "volume": 0.2631578947368421,
-        "fan": 0.2105263157894737,
-        "seed": 0.10526315789473685,
-        "context": 0.10526315789473685,
+        "fan": 0.21052631578947367,
+        "seed": 0.10526315789473684,
+        "context": 0.10526315789473684,
         "collection": 0.15789473684210525
       },
-      "top_overlap": 28,
+      "top_overlap": 29,
       "top_size": 30,
-      "top_overlap_share": 0.9333333333333333,
-      "max_top_rank_shift": 6
+      "top_overlap_share": 0.9666666666666667,
+      "max_top_rank_shift": 9
     },
     {
       "scenario": "fan_1.2",
       "weights": {
-        "role": 0.14285714285714285,
-        "volume": 0.23809523809523808,
-        "fan": 0.2857142857142857,
-        "seed": 0.09523809523809523,
-        "context": 0.09523809523809523,
-        "collection": 0.14285714285714285
+        "role": 0.14285714285714288,
+        "volume": 0.23809523809523814,
+        "fan": 0.28571428571428575,
+        "seed": 0.09523809523809526,
+        "context": 0.09523809523809526,
+        "collection": 0.14285714285714288
       },
-      "top_overlap": 27,
+      "top_overlap": 28,
       "top_size": 30,
-      "top_overlap_share": 0.9,
-      "max_top_rank_shift": 6
+      "top_overlap_share": 0.9333333333333333,
+      "max_top_rank_shift": 7
     },
     {
       "scenario": "seed_0.8",
@@ -153,10 +153,10 @@
         "context": 0.10204081632653061,
         "collection": 0.15306122448979592
       },
-      "top_overlap": 29,
+      "top_overlap": 30,
       "top_size": 30,
-      "top_overlap_share": 0.9666666666666667,
-      "max_top_rank_shift": 3
+      "top_overlap_share": 1.0,
+      "max_top_rank_shift": 4
     },
     {
       "scenario": "seed_1.2",
@@ -176,17 +176,17 @@
     {
       "scenario": "context_0.8",
       "weights": {
-        "role": 0.15306122448979592,
-        "volume": 0.25510204081632654,
-        "fan": 0.25510204081632654,
+        "role": 0.1530612244897959,
+        "volume": 0.2551020408163265,
+        "fan": 0.2551020408163265,
         "seed": 0.10204081632653061,
-        "context": 0.08163265306122451,
-        "collection": 0.15306122448979592
+        "context": 0.0816326530612245,
+        "collection": 0.1530612244897959
       },
       "top_overlap": 29,
       "top_size": 30,
       "top_overlap_share": 0.9666666666666667,
-      "max_top_rank_shift": 3
+      "max_top_rank_shift": 5
     },
     {
       "scenario": "context_1.2",
@@ -198,10 +198,10 @@
         "context": 0.11764705882352941,
         "collection": 0.14705882352941177
       },
-      "top_overlap": 29,
+      "top_overlap": 30,
       "top_size": 30,
-      "top_overlap_share": 0.9666666666666667,
-      "max_top_rank_shift": 3
+      "top_overlap_share": 1.0,
+      "max_top_rank_shift": 2
     },
     {
       "scenario": "collection_0.8",
@@ -213,9 +213,9 @@
         "context": 0.10309278350515465,
         "collection": 0.12371134020618557
       },
-      "top_overlap": 27,
+      "top_overlap": 28,
       "top_size": 30,
-      "top_overlap_share": 0.9,
+      "top_overlap_share": 0.9333333333333333,
       "max_top_rank_shift": 7
     },
     {
@@ -231,7 +231,7 @@
       "top_overlap": 28,
       "top_size": 30,
       "top_overlap_share": 0.9333333333333333,
-      "max_top_rank_shift": 6
+      "max_top_rank_shift": 5
     },
     {
       "scenario": "without_role",
@@ -243,24 +243,27 @@
         "context": 0.11764705882352942,
         "collection": 0.17647058823529413
       },
-      "top_overlap": 24,
+      "top_overlap": 22,
       "top_size": 30,
-      "top_overlap_share": 0.8,
-      "max_top_rank_shift": 21
+      "top_overlap_share": 0.7333333333333333,
+      "max_top_rank_shift": 38
     }
   ],
-  "python": "3.12.14",
-  "dependencies": {
+  "transaction_dates_day_only": true,
+  "cycles": 387,
+  "repeated_routes": 26,
+  "sensitivity_scenarios": 14,
+  "python_version": "3.11.9",
+  "dependency_versions": {
     "pandas": "2.2.3",
     "numpy": "2.2.6",
-    "pyarrow": "19.0.1",
-    "networkx": "3.4.2"
+    "networkx": "3.4.2",
+    "pyarrow": "19.0.1"
   },
   "input_sha256": {
     "edges.parquet": "4e71dde5cd3115bcb26e91202665532ee6581cf8233a9fc8059ea59fb7358a38",
     "nodes.parquet": "d2a45b0df6e9352832d5fb09839d10b9e23f898156c3bab263b051b31cc0296d",
     "transactions.parquet": "c30c5317b5439591dde86f2058dc47a3d19b2900c055ded994fe547f6fb7e7da"
   },
-  "transaction_dates_day_only": true,
-  "elapsed_seconds": 2.534
+  "elapsed_seconds": 2.24
 }

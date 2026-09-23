@@ -2,8 +2,8 @@
 import numpy as np
 import pandas as pd
 
-ROLE_WEIGHT = {'coordinator': 1., 'consolidator': 1., 'distributor': 1.,
-               'transit': .8, 'terminal': .35, 'peripheral': .1}
+ROLE_WEIGHT = {'coordinator': 1., 'consolidator': .95, 'distributor': .75,
+               'transit': .65, 'terminal': .45, 'peripheral': .1}
 WEIGHTS = {'role': .15, 'volume': .25, 'fan': .25, 'seed': .10, 'context': .10, 'collection': .15}
 
 
@@ -38,6 +38,8 @@ def rank(df, top_n=30):
         f'сбор с малой отдачей {r.priority_collection:.4f}. '
         f'Хопов: {r.seed_hops}; seed в пределах 4 шагов: {r.reachable_seed_count}; '
         f'транзакций вход/выход: {r.n_tx_in}/{r.n_tx_out}. '
+        f'Правило: {getattr(r, "rule_text", "см. README")}. '
+        f'Дополнительные сигналы: {getattr(r, "anomaly_evidence", "нет")}. '
         'Балл задаёт порядок ручной проверки, не вероятность виновности.'
         for r in ordered.itertuples(index=False)]
     return df, ordered[['rank', 'gid', 'role', 'priority_score', 'why']]
